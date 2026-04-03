@@ -121,7 +121,6 @@ GREEN  = Pin 5
 
 ### Installation
 
-```bash
 git clone https://github.com/Lashiien/morphos.git
 cd morphos
 pip install -r requirements.txt
@@ -155,6 +154,8 @@ python label_tool.py
 # 3. Train
 python train.py
 # Weights auto-save to models/trained/best.pt
+
+
 ## ⚙️ Configuration
 
 All tunable parameters are in `config.py`:
