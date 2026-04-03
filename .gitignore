@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environment
+venv/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Training data (too large for GitHub)
+data/raw/
+data/labels/
+data/morphos_training/
+
+# Archived old data
+_archive_old_data/
+
+# Training runs and checkpoints
+runs/
+
+# Logs
+*.log
+morphos_system.log
+
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Output files
+output.txt
+
+# Keep the trained model (it's only 18MB)
+# models/trained/best.pt is NOT ignored — we want it in the repo

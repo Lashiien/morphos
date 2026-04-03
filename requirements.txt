@@ -1,0 +1,19 @@
+# PROJECT MORPHOS - Python dependencies
+# Generated from audit of all .py imports
+
+# Computer vision
+opencv-python>=4.8.0
+
+# YOLO detection (includes torch dependency)
+ultralytics>=8.0.0
+
+# Serial communication with Arduino
+pyserial>=3.5
+
+# Numerical / signal processing
+numpy>=1.24.0
+scipy>=1.10.0
+
+# PyTorch (required by ultralytics; explicit for train_morphos.py)
+torch>=2.0.0
+torchvision>=0.15.0
