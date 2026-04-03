@@ -45,22 +45,20 @@ A **hardware watchdog timer** (5 seconds) on the Arduino ensures the traffic lig
 ---
 
 ## 🏗️ Architecture
-┌─────────────┐     ┌──────────────────┐     ┌────────────────────┐
-│  USB Camera  │────▶│  YOLOv8 Nano     │────▶│  Flash Detector    │
-│  (30 FPS)    │     │  (CUDA/RTX 3060) │     │  FFT + HSV + Motion│
-└─────────────┘     └──────────────────┘     └────────┬───────────┘
+Camera (30fps) ──► YOLOv8-Nano (CUDA) ──► Flash Detector (FFT+HSV) ──► Serial (9600 baud) ──► Arduino
 │
-┌────────▼───────────┐
-│  Serial Controller │
-│  (9600 baud)       │
-└────────┬───────────┘
-│
-┌────────▼───────────┐
-│  const int RED_PIN = 3;
-const int YELLOW_PIN = 2;
-const int GREEN_PIN = 5;   │
-└────────────────────┘
+RED    = Pin 3
+YELLOW = Pin 2
+GREEN  = Pin 5
 
+
+**Pipeline:**
+1. USB camera captures frames at 30 FPS
+2. YOLOv8 runs inference on GPU to detect ambulances
+3. Flash detector analyzes the bounding box region using FFT frequency analysis + HSV color tracking
+4. Motion stability gate rejects false triggers from fast movement (>40px between frames)
+5. After 25 confirmed flash frames (~0.8s), serial command activates emergency green on Arduino
+6. Hardware watchdog timer (5s) auto-resets traffic light if Python crashes
 
 ---
 
@@ -97,20 +95,19 @@ const int GREEN_PIN = 5;   │
 
 ## 📁 Project Structure
 
-morphos/
-├── morphos_final_v2.py          # Main application (entry point)
-├── config.py                     # All configurable parameters
-├── flash_detector.py             # FFT + HSV flash analysis engine
-├── capture_dataset.py            # Training data capture tool
-├── label_tool.py                 # Bounding box labeling GUI
-├── train.py                      # YOLOv8 training pipeline
-├── requirements.txt              # Python dependencies
-├── models/
-│   └── trained/
-│       └── best.pt               # Trained YOLOv8 weights
-└── morphos_traffic_controller/
-└── morphos_traffic_controller.ino  # Arduino firmware
-
+| File | Description |
+|------|-------------|
+| `morphos_final_v2.py` | Main application (entry point) |
+| `config.py` | All configurable parameters |
+| `flash_detector.py` | FFT + HSV flash analysis engine |
+| `capture_dataset.py` | Training data capture tool |
+| `label_tool.py` | Bounding box labeling GUI |
+| `train.py` | YOLOv8 training pipeline |
+| `morphos_serial_test.py` | Arduino serial connection tester |
+| `test_final.py` | Simple inference demo |
+| `requirements.txt` | Python dependencies |
+| `models/trained/best.pt` | Trained YOLOv8 weights |
+| `morphos_traffic_controller/` | Arduino firmware (.ino) |
 
 ---
 
@@ -125,7 +122,7 @@ morphos/
 ### Installation
 
 ```bash
-git clone https://github.com/Lashien/morphos.git
+git clone https://github.com/Lashiien/morphos.git
 cd morphos
 pip install -r requirements.txt
 
@@ -158,18 +155,20 @@ python label_tool.py
 # 3. Train
 python train.py
 # Weights auto-save to models/trained/best.pt
-⚙️ Configuration
+## ⚙️ Configuration
 
-All tunable parameters are in config.py:
+All tunable parameters are in `config.py`:
 
-Parameter	Default	Description
-CONFIDENCE_THRESHOLD	0.5	Minimum YOLO detection confidence
-FLASH_FREQUENCY_RANGE	(1.0, 6.0)	Emergency light frequency range (Hz)
-FLASH_THRESHOLD_STD	15.0	Flash brightness sensitivity
-FLASH_CONFIRMATION_FRAMES	25	Frames needed to confirm emergency (~0.8s)
-FRAMES_TO_CLEAR_EMERGENCY	30	Frames without flash to exit emergency mode
-SERIAL_BAUD_RATE	9600	Arduino communication speed
-🤝 Contributors
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `CONFIDENCE_THRESHOLD` | `0.5` | Minimum YOLO detection confidence |
+| `FLASH_FREQUENCY_RANGE` | `(1.0, 6.0)` | Emergency light frequency range (Hz) |
+| `FLASH_THRESHOLD_STD` | `15.0` | Flash brightness sensitivity |
+| `FLASH_CONFIRMATION_FRAMES` | `25` | Frames needed to confirm emergency (~0.8s) |
+| `FRAMES_TO_CLEAR_EMERGENCY` | `30` | Frames without flash to exit emergency mode |
+| `SERIAL_BAUD_RATE` | `9600` | Arduino communication speed |
+
+---
 Lashien — Developer
 More contributors to be added
 🤖 Built With AI
