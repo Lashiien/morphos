@@ -153,4 +153,5 @@ Developed with AI assistance (Claude, Roo Code) for architecture, debugging, and
 
 ## License
 
-MIT — see [LICENSE](LICENSE) for details.
+>  Licensed under CC BY-NC 4.0 | 
+Commercial use requires permission
