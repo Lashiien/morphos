@@ -12,7 +12,6 @@ pyserial>=3.5
 
 # Numerical / signal processing
 numpy>=1.24.0
-scipy>=1.10.0
 
 # PyTorch (required by ultralytics; explicit for train_morphos.py)
 torch>=2.0.0
