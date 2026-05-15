@@ -1,5 +1,3 @@
-https://github.com/user-attachments/assets/3283b217-263a-4b2c-a6c8-f83d919e21de
-
 # Project MORPHOS
 **Real-time ambulance detection and automatic traffic signal preemption**
 
