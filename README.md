@@ -116,9 +116,9 @@ Planned next steps:
 |---|---|
 | Object Detection | YOLOv8-nano (Ultralytics) |
 | Computer Vision | OpenCV 4.8+ |
-| Signal Processing | SciPy (FFT), NumPy |
+| Signal Processing | NumPy |
 | Deep Learning | PyTorch 2.0+ (CUDA) |
-| Serial Communication | PySerial |
+| Serial Communication | PySerial (with Heartbeat Keep-alive) |
 | Microcontroller | Arduino UNO/Nano |
 | Language | Python 3.10, C++ (Arduino) |
 | Development assistance | Claude, Roo Code |
@@ -192,7 +192,7 @@ All parameters are in `config.py`:
 | `FLASH_FREQUENCY_RANGE` | `(1.0, 6.0)` | Emergency-light frequency window (Hz) |
 | `FLASH_THRESHOLD_STD` | `15.0` | Flash brightness sensitivity |
 | `FLASH_CONFIRMATION_FRAMES` | `25` | Frames to confirm emergency (~0.8 s @ 30 FPS) |
-| `FRAMES_TO_CLEAR_EMERGENCY` | `30` | Frames without flash before exiting emergency mode |
+| `FRAMES_TO_CLEAR` | `30` | Frames without flash before exiting emergency mode |
 | `SERIAL_BAUD_RATE` | `9600` | Arduino communication speed |
 
 ---
