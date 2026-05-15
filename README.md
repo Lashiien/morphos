@@ -1,3 +1,8 @@
+<img width="1600" height="870" alt="WhatsApp Image 2026-05-15 at 11 39 09 PM" src="https://github.com/user-attachments/assets/70bdefb8-b353-4fb5-8045-d41671fd42eb" />
+
+
+https://github.com/user-attachments/assets/3283b217-263a-4b2c-a6c8-f83d919e21de
+
 # Project MORPHOS
 **Real-time ambulance detection and automatic traffic signal preemption**
 
