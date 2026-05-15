@@ -24,7 +24,7 @@ Alternative: link to a YouTube/Drive video using the image-thumbnail syntax:
 
 | Detection in action | Hardware setup |
 |---|---|
-| ![Detection running on a test clip](docs/detection.png) | ![Arduino + LED traffic-light rig](docs/hardware.png) |
+| ![Detection running on a test clip](https://github.com/user-attachments/assets/f82d140e-42d2-49c2-a2c8-e7e3aff0b324) | ![Arduino + LED traffic-light rig](docs/hardware.png) |
 
 ---
 
