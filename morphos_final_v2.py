@@ -1,13 +1,11 @@
 import cv2
+import torch
 from ultralytics import YOLO
 import serial
 import serial.tools.list_ports
 import time
 import sys
-import numpy as np
-from collections import deque
 import logging
-from pathlib import Path
 
 # Import our advanced flash detector
 from flash_detector import EmergencyFlashDetector
@@ -65,11 +63,8 @@ class ArduinoController:
             logger.info(f"Using only available port: {arduino_port}")
         
         if not arduino_port:
-            choice = input("\nEnter port (COM3/COM4/etc) or number: ").strip()
-            if choice.isdigit() and 0 < int(choice) <= len(ports):
-                arduino_port = ports[int(choice)-1].device
-            else:
-                arduino_port = choice
+            logger.warning("Could not auto-detect Arduino. Falling back to DEBUG mode.")
+            return None
         
         # Attempt connection with retry
         for attempt in range(Config.SERIAL_RETRY_ATTEMPTS):
@@ -115,8 +110,9 @@ class ArduinoController:
                     self.serial_port.write(command)
                     self.serial_port.flush()
                     return True
-                except:
-                    pass
+                except serial.SerialException as e:
+                    logger.error(f"Serial write failed after reconnect: {e}")
+                    return False
             return False
         
         except Exception as e:
@@ -187,7 +183,7 @@ def main():
     print("=" * 70)
     
     # Initialize Arduino controller
-    arduino = ArduinoController(Config.BAUD_RATE, Config.SERIAL_TIMEOUT)
+    arduino = ArduinoController(Config.SERIAL_BAUD_RATE, Config.SERIAL_TIMEOUT)
     arduino.connect()
     
     # Initialize flash detector
@@ -202,20 +198,16 @@ def main():
     try:
         model_path = Config.get_model_path()
         logger.info(f"Loading model: {model_path}")
-        # Use CUDA without FP16 (RTX 3060 stable)
-        model = YOLO(model_path).to('cuda')
-        logger.info("Model loaded on RTX 3060 (CUDA)")
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        model = YOLO(model_path).to(device)
+        logger.info(f"Model loaded on {device.upper()}")
     except FileNotFoundError as e:
         logger.error(e)
         sys.exit(1)
-    except Exception as e:
-        # Fallback to CPU if CUDA fails
-        logger.warning(f"CUDA load failed ({e}), trying CPU")
-        model = YOLO(model_path)
     
     # Initialize camera
     logger.info("Starting camera...")
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(Config.CAMERA_INDEX)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     cap.set(cv2.CAP_PROP_FPS, Config.CAMERA_FPS)
@@ -237,6 +229,9 @@ def main():
     
     # Manual override flag
     manual_clear = False
+
+    # Heartbeat timer — tracks last time b'1' was sent to keep Arduino watchdog alive
+    last_heartbeat_time = 0.0
     
     logger.info("System ready. Press 'Q' to quit, 'C' to force clear emergency.\n")
     
@@ -254,7 +249,7 @@ def main():
             
             # YOLO inference every 2nd frame
             if frame_counter % 2 == 1:
-                results = model.predict(frame, conf=Config.CONF_THRESHOLD, verbose=False)
+                results = model.predict(frame, conf=Config.CONFIDENCE_THRESHOLD, verbose=False)
                 
                 best_box = None
                 best_conf = 0
@@ -374,7 +369,17 @@ def main():
                 consecutive_no_flash = 0
                 manual_clear = False
                 logger.info("✓ Emergency cleared - MANUAL OVERRIDE")
-            
+
+            # ================================================================
+            # HEARTBEAT: re-send b'1' periodically so the Arduino watchdog
+            # does not expire (5s timeout) while emergency is still active.
+            # ================================================================
+            if flash_confirmed and arduino.current_state:
+                now = time.time()
+                if now - last_heartbeat_time >= Config.HEARTBEAT_INTERVAL:
+                    arduino.send_command(b'1')
+                    last_heartbeat_time = now
+
             # ================================================================
             # UI OVERLAY
             # ================================================================
@@ -433,6 +438,7 @@ def main():
         arduino.close()
         cap.release()
         cv2.destroyAllWindows()
+        cv2.waitKey(1)  # pump Win32 event queue so window teardown completes
         logger.info("System offline")
 
 if __name__ == "__main__":

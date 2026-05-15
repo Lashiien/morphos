@@ -44,3 +44,9 @@ output.txt
 
 # Keep the trained model (it's only 18MB)
 # models/trained/best.pt is NOT ignored — we want it in the repo
+
+# Ignore old heavy data and logs
+_archive_old_data/
+runs/
+__pycache__/
+*.log

@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 from collections import deque
 from typing import Tuple, List, Optional
-from scipy import signal
 import logging
 
 logging.basicConfig(level=logging.INFO)
