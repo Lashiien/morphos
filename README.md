@@ -22,9 +22,10 @@ Alternative: link to a YouTube/Drive video using the image-thumbnail syntax:
 
 *[Demo video to be embedded — short clip showing ambulance entering frame, detection bounding box appearing, signal switching to green, and the system returning to normal cycling after the vehicle clears.]*
 
-| Detection in action | Hardware setup |
-|---|---|
-| ![Detection running on a test clip](https://github.com/user-attachments/assets/f82d140e-42d2-49c2-a2c8-e7e3aff0b324) | ![Arduino + LED traffic-light rig](docs/hardware.png) |
+https://github.com/user-attachments/assets/f82d140e-42d2-49c2-a2c8-e7e3aff0b324
+
+<img width="1600" height="870" alt="WhatsApp Image 2026-05-15 at 11 39 09 PM" src="https://github.com/user-attachments/assets/ad844bbb-9ad5-4e78-aab7-753e9615b865" />
+
 
 ---
 
